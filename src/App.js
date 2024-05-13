@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { useSpring, animated } from '@react-spring/web';
 import { useDrag } from '@use-gesture/react';
 import 'leaflet/dist/leaflet.css';
 import './App.css';
+import Butter from 'butter-lib/dist.js'
+await Butter.init()
 
 function App() {
   const [panelHeight, setPanelHeight] = useState(30); // initial height of the panel
   const [{ y }, set] = useSpring(() => ({ y: 0 })); // state for dragging
+  const [data, setData] = useState(null);
+  const [aroundStops, setAroundStops] = useState(null);
+
+  useEffect(() => {
+    const fetchDataAsync = async () => {
+      const aroundStops = await Butter.getStopsWithinRadius(35.6895, 139.6917, 1000)
+      setAroundStops(aroundStops);
+      setData('fetched')
+    };
+
+    fetchDataAsync();
+  }, []);
 
   const bind = useDrag(({ down, movement: [_, my], last }) => {
     if (down) {
@@ -43,7 +57,7 @@ function App() {
       </div>
       <animated.div {...bind()} className="info-panel" style={panelStyle}>
         <h2>Information Panel</h2>
-        <p>detail</p>
+        <p>{data ? data : "Loading..."}</p>
       </animated.div>
     </div>
   );
