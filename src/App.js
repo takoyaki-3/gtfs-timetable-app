@@ -15,14 +15,14 @@ function App() {
       set({ y: my, immediate: true });
     } else if (last) {
       // dragging ended
-      const newHeight = Math.max(10, Math.min(80, panelHeight - my / 10));
+      const newHeight = Math.max(10, Math.min(90, panelHeight - my / 10));
       setPanelHeight(newHeight);
       set({ y: 0, immediate: true });
     }
   }, { axis: 'y' });
 
   const panelStyle = {
-    height: y.to(v => `${Math.max(10, Math.min(80, panelHeight - v / 10))}vh`),
+    height: y.to(v => `${Math.max(10, Math.min(90, panelHeight - v / 10))}vh`),
     touchAction: 'none' // stop browser from scrolling
   };
 
