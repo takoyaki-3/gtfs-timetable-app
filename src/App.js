@@ -7,17 +7,26 @@ import './App.css';
 import Butter from 'butter-lib/dist.js'
 await Butter.init()
 
+// const customIcon = new L.Icon({
+//   iconUrl: '/marker-icon.png', // publicフォルダに配置したカスタムアイコン画像
+//   iconSize: [25, 41], // アイコンのサイズ
+//   iconAnchor: [12, 41], // アイコンのアンカー位置
+//   popupAnchor: [1, -34], // ポップアップのアンカー位置
+//   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png', // 影の画像
+//   shadowSize: [41, 41] // 影のサイズ
+// });
+
 function App() {
   const [panelHeight, setPanelHeight] = useState(30); // initial height of the panel
   const [{ y }, set] = useSpring(() => ({ y: 0 })); // state for dragging
   const [data, setData] = useState(null);
-  const [aroundStops, setAroundStops] = useState(null);
+  const [aroundStops, setAroundStops] = useState([]);
 
   useEffect(() => {
     const fetchDataAsync = async () => {
-      const aroundStops = await Butter.getStopsWithinRadius(35.6895, 139.6917, 1000)
-      setAroundStops(aroundStops);
-      setData('fetched')
+      const stops = await Butter.getStopsWithinRadius(35.6895, 139.6917, 1000);
+      setAroundStops(stops);
+      setData('fetched');
     };
 
     fetchDataAsync();
@@ -53,6 +62,15 @@ function App() {
               A pretty CSS3 popup. <br /> Easily customizable.
             </Popup>
           </Marker>
+          {aroundStops.map((stop, index) => (
+            stop.stop_lat && stop.stop_lon ? (
+              <Marker key={index} position={[stop.stop_lat, stop.stop_lon]} /*icon={customIcon}*/>
+                <Popup>
+                  {stop.name}
+                </Popup>
+              </Marker>
+            ) : null
+          ))}
         </MapContainer>
       </div>
       <animated.div {...bind()} className="info-panel" style={panelStyle}>
